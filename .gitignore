@@ -1,7 +1,8 @@
 # Virtual environment
-venv
 /.venv/
+venv
 .env/
+
 
 # PyCharm config files
 .idea/
