@@ -2,7 +2,7 @@ name: Thesis work Tests
 
 on:
   schedule:
-      - cron: '10 13 * * *'
+      - cron: '*/30 * * * *'
   workflow_dispatch:
 
 jobs:
