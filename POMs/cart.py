@@ -25,6 +25,7 @@ class Cart:
             self.confirm_order_button.click()
 
     def is_purchase_successful(self):
+        self.page.wait_for_load_state("networkidle")
         self.page.wait_for_url("https://automationteststore.com/index.php?rt=checkout/success")
         if "success" in self.page.url:
             return True
