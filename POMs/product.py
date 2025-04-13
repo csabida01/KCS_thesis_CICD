@@ -20,7 +20,7 @@ class Product:
             self.product_list.click()
 
     def add_product_to_cart(self):
-        self.page.wait_for_timeout(100)
+        self.page.wait_for_timeout(1000)
         if self.add_to_cart_button.is_visible():
             self.add_to_cart_button.click()
 
