@@ -26,7 +26,7 @@ jobs:
 
       - name: Run tests with PYTHONPATH
         run: |
-          PYTHONPATH=. pytest > result.log || true
+          PYTHONPATH=. pytest/tests > result.log || true
 
       - name: Send test results via email
         uses: dawidd6/action-send-mail@v3
