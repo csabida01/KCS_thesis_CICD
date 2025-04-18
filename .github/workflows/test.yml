@@ -26,7 +26,19 @@ jobs:
 
       - name: Run tests with PYTHONPATH
         run: |
-          PYTHONPATH=. pytest tests/ > result.log || true
+          PYTHONPATH=. pytest tests/ > own_test_results.txt || true
+
+      - name: Run Pom and test generator
+        run: |
+          PYTHONPATH=. pytest generated_poms_and_test/ai_code_generator.py > ai_generator.txt || true
+
+      - name: Run AI test
+        run: |
+          PYTHONPATH=. pytest generated_poms_and_test/generated_test_main.py > ai_test_results.txt || true
+
+      - name: Combine the logs
+        run: |
+          cat own_test_results.txt ai_generator.txt ai_test_results.txt > full_test_pipeline_results.txt
 
       - name: Send test results via email
         uses: dawidd6/action-send-mail@v3
@@ -40,15 +52,15 @@ jobs:
           to: ${{ secrets.EMAIL_TO }}
           from: ${{ secrets.EMAIL_USERNAME }}
           body: |
-            Hello!
+            Szia!
 
-            Here are the test results from your latest GitHub Actions run.
+            Itt vannak a lefuttatott teszt eredmények.
 
             Repository: ${{ github.repository }}
             Workflow: ${{ github.workflow }}
             Status: ${{ job.status }}
             Run URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-            Best,
-            Your Friendly GitHub Bot
-          attachments: result.log
+            Üdv,
+            Github Actions
+          attachments: full_test_pipeline_results.txt
