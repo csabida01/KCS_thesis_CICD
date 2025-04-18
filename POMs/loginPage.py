@@ -1,3 +1,4 @@
+import os
 from playwright.sync_api import Page
 
 
@@ -18,6 +19,9 @@ class LoginPage:
         self.login_button.click()
 
     def is_logged_in(self):
+        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        json_path = os.path.join(project_root, "logged_in_state.json")
         if self.my_account.is_visible():
-            self.page.context.storage_state(path="logged_in_state.json")
+            self.page.context.storage_state(path=json_path)
+            print("Saved login state to:", json_path)
         return self.my_account.is_visible()
