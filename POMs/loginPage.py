@@ -23,5 +23,4 @@ class LoginPage:
         json_path = os.path.join(project_root, "logged_in_state.json")
         if self.my_account.is_visible():
             self.page.context.storage_state(path=json_path)
-            print("Saved login state to:", json_path)
         return self.my_account.is_visible()
