@@ -472,10 +472,10 @@ message_content = messages[0].content[0].text.value
 
 code_list = re.split(r"(?:\s*\n\s*){3,}", message_content.strip())
 
-with open("generated_loginPage.py", "w") as f1, \
-        open("generated_product.py", "w") as f2, \
-        open("generated_cart.py", "w") as f3, \
-        open("generated_test_main.py", "w") as f4:
+with open("generated_poms_and_test/generated_loginPage.py", "w") as f1, \
+        open("generated_poms_and_test/generated_product.py", "w") as f2, \
+        open("generated_poms_and_test/generated_cart.py", "w") as f3, \
+        open("generated_poms_and_test/generated_test_main.py", "w") as f4:
     f1.write(f"{code_list[0]}")
     f2.write(f"{code_list[1]}")
     f3.write(f"{code_list[2]}")
