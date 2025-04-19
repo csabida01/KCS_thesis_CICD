@@ -39,9 +39,9 @@ jobs:
         run: |
           git config --global user.name "csabida01"
           git config --global user.email "csabida01@users.noreply.github.com"
-          git add -A
+          git add generated_poms_and_test/
           git commit -m "Update generated POMs and tests" || echo "No changes to commit"
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/csabida01/KCS_thesis_CICD.git
+          git push https://csabida01:${{ secrets.GH_PAT }}@github.com/csabida01/KCS_thesis_CICD.git
 
       - name: Run AI test
         run: |
