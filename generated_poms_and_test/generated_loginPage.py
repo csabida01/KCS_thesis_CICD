@@ -1,32 +1,40 @@
 class LoginPage:
-    LOGIN_OR_REGISTER_SELECTOR = 'a[href="https://automationteststore.com/index.php?rt=account/login"]'
-    USERNAME_INPUT_SELECTOR = 'input#loginFrm_loginname'
-    PASSWORD_INPUT_SELECTOR = 'input#loginFrm_password'
-    LOGIN_BUTTON_SELECTOR = 'button[title="Login"]'
-    LOGIN_ERROR_SELECTOR = 'div.alert.alert-error.alert-danger'
-
     def __init__(self, page):
         self.page = page
 
-    def click_login_or_register(self):
-        self.page.wait_for_selector(self.LOGIN_OR_REGISTER_SELECTOR, timeout=15000)
-        self.page.click(self.LOGIN_OR_REGISTER_SELECTOR)
+    # Locators for header login link
+    def login_or_register_link(self):
+        return self.page.locator('a[href="https://automationteststore.com/index.php?rt=account/login"]:visible')
+    
+    # Locators for login box
+    def loginname_input(self):
+        return self.page.locator('input#loginFrm_loginname')
 
-    def fill_username(self, username):
-        self.page.wait_for_selector(self.USERNAME_INPUT_SELECTOR, timeout=15000)
-        self.page.fill(self.USERNAME_INPUT_SELECTOR, username)
+    def password_input(self):
+        return self.page.locator('input#loginFrm_password')
 
-    def fill_password(self, password):
-        self.page.wait_for_selector(self.PASSWORD_INPUT_SELECTOR, timeout=15000)
-        self.page.fill(self.PASSWORD_INPUT_SELECTOR, password)
+    def login_button(self):
+        return self.page.locator('button[title="Login"]')
 
-    def click_login_button(self):
-        self.page.wait_for_selector(self.LOGIN_BUTTON_SELECTOR, timeout=15000)
-        self.page.click(self.LOGIN_BUTTON_SELECTOR)
+    def login_error_message(self):
+        return self.page.locator('div.alert.alert-error.alert-danger')
 
-    def is_error_message_visible(self):
-        try:
-            self.page.wait_for_selector(self.LOGIN_ERROR_SELECTOR, timeout=10000)
-            return True
-        except Exception:
-            return False
+    # Account page proof element (for successful login)
+    def account_dashboard(self):
+        return self.page.locator('ul.side_account_list li.selected a[href="https://automationteststore.com/index.php?rt=account/account"]')
+
+    # Top menu checkout (for cart test, visible after login)
+    def top_checkout_link(self):
+        return self.page.locator('a.menu_checkout')
+
+    # Search bar from header
+    def search_bar_input(self):
+        return self.page.locator('input#filter_keyword')
+
+    # Method for login
+    def do_login(self, username, password):
+        self.login_or_register_link().click()
+        self.loginname_input().wait_for(state="visible", timeout=7000)
+        self.loginname_input().fill(username)
+        self.password_input().fill(password)
+        self.login_button().click()
