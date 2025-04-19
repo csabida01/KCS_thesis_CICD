@@ -1,26 +1,34 @@
 class Product:
     def __init__(self, page):
         self.page = page
+        # search-bar input in header
+        self.search_input = '#filter_keyword'
+        # search result grid (Lip search)
+        self.viva_glam_lipstick_title = 'a[title="Viva Glam Lipstick"]'
+        # Lipstick datasheet product add to cart
+        self.add_to_cart_link = '.productpagecart li a.cart'
+        # Add to cart in grid
+        self.grid_add_to_cart_button = 'a.productcart[data-id="59"]'
+        # Indicator for no results
+        self.no_result_message = 'div.contentpanel > div:has-text("There is no product that matches the search criteria.")'
 
-    # Lipstick datasheet add to cart
-    def datasheet_add_to_cart(self):
-        return self.page.locator('ul.productpagecart a.cart')
+    def search_product(self, keyword):
+        self.page.wait_for_selector(self.search_input, timeout=10000)
+        self.page.fill(self.search_input, keyword)
+        self.page.keyboard.press('Enter')
 
-    # On grid, add product by data-id (specific to search results)
-    def grid_add_to_cart_viva_glam(self):
-        return self.page.locator('a.productcart[data-id="59"]')
+    def click_add_to_cart_datasheet(self):
+        self.page.wait_for_selector(self.add_to_cart_link, timeout=10000)
+        self.page.click(self.add_to_cart_link)
 
-    def viva_glam_link_in_search_results(self):
-        return self.page.locator('a[title="Viva Glam Lipstick"]').first
+    def click_result_by_title(self, title="Viva Glam Lipstick"):
+        self.page.wait_for_selector(f'a[title="{title}"]', timeout=10000)
+        self.page.click(f'a[title="{title}"]')
 
-    # Lip search results
-    def prdocutname_link(self, title):
-        return self.page.locator(f'a.prdocutname[title="{title}"]').first
+    def click_add_to_cart_grid(self, product_id="59"):
+        self.page.wait_for_selector(f'a.productcart[data-id="{product_id}"]', timeout=10000)
+        self.page.click(f'a.productcart[data-id="{product_id}"]')
 
-    # No product found message
-    def no_results_found(self):
-        return self.page.locator('div', has_text="There is no product that matches the search criteria.")
-
-    # Search results grid
-    def product_grid(self):
-        return self.page.locator('div.thumbnails.grid.row.list-inline')
+    def is_no_results_message_visible(self):
+        self.page.wait_for_selector(self.no_result_message, timeout=10000)
+        return self.page.is_visible(self.no_result_message)

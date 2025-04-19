@@ -1,30 +1,29 @@
 class LoginPage:
     def __init__(self, page):
         self.page = page
+        # header selectors
+        self.login_or_register_link = 'a[href="https://automationteststore.com/index.php?rt=account/login"]'
+        self.menu_login_link = 'li[data-id="menu_login"] a.menu_login'
+        # login page selectors
+        self.login_username_input = 'input#loginFrm_loginname'
+        self.login_password_input = 'input#loginFrm_password'
+        self.login_button = 'button[title="Login"]'
+        self.error_message = 'div.alert.alert-error.alert-danger'
+        # account selectors
+        self.account_dashboard = 'ul.side_account_list li.selected a[href*="account/account"]'
 
-    # Header selectors
-    def login_or_register_link(self):
-        return self.page.locator('a[href="https://automationteststore.com/index.php?rt=account/login"]', has_text="Login or register").first
+    def goto_login(self):
+        self.page.wait_for_selector(self.login_or_register_link, timeout=10000)
+        self.page.click(self.login_or_register_link)
 
-    def search_bar_input(self):
-        return self.page.locator('input#filter_keyword')
+    def do_login(self, username, password):
+        self.page.wait_for_selector(self.login_username_input, timeout=10000)
+        self.page.fill(self.login_username_input, username)
+        self.page.fill(self.login_password_input, password)
+        self.page.click(self.login_button)
 
-    def top_checkout(self):
-        return self.page.locator('a.menu_checkout').first
+    def is_error_message_visible(self):
+        return self.page.is_visible(self.error_message)
 
-    # Login form selectors
-    def username_input(self):
-        return self.page.locator('input#loginFrm_loginname')
-
-    def password_input(self):
-        return self.page.locator('input#loginFrm_password')
-
-    def login_button(self):
-        return self.page.locator('button[title="Login"]')
-
-    def error_message(self):
-        return self.page.locator('div.alert.alert-error.alert-danger')
-
-    # My Account confirmation element
-    def my_account_h2(self):
-        return self.page.locator('h2.heading2', has_text="My Account")
+    def is_account_dashboard_visible(self):
+        return self.page.is_visible(self.account_dashboard)
