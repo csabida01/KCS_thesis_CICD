@@ -2,26 +2,25 @@ class Cart:
     def __init__(self, page):
         self.page = page
 
-    def checkout_button(self):
-        return self.page.locator('a#cart_checkout1')
+    # Checkout button in cart
+    def get_checkout_button(self):
+        return self.page.locator('a#cart_checkout1[title="Checkout"]')
 
-    def update_button(self):
-        return self.page.locator('button#cart_update')
+    def get_update_button(self):
+        return self.page.locator('button#cart_update[title="Update"]')
 
-    def confirm_order_button(self):
-        return self.page.locator('button#checkout_btn')
+    # Confirm Order
+    def get_confirm_order_button(self):
+        return self.page.locator('button#checkout_btn[title="Confirm Order"]')
 
-    def order_processed_heading(self):
-        return self.page.locator('span.maintext:has-text("Your Order Has Been Processed!")')
+    # "Order Success" - detect after order is processed, heading1 with fa-thumbs-up
+    def get_success_heading(self):
+        return self.page.locator('h1.heading1 .fa-thumbs-up')
 
-    def empty_cart_msg(self):
-        return self.page.locator('div.contentpanel:has-text("Your shopping cart is empty!")')
+    # Empty Cart detection (uses fa-frown)
+    def get_empty_cart_heading(self):
+        return self.page.locator('h1.heading1 .fa-frown')
 
-    def continue_button(self):
-        # after order or empty cart
-        return self.page.locator('a.btn.btn-default[title="Continue"]')
-
-    # Util method to go to cart (by menu or direct URL)
-    def go_to_checkout(self):
-        # Use first element in menu
-        self.page.locator('a.menu_checkout').first.click()
+    # "Continue" button after success or empty cart
+    def get_continue_button(self):
+        return self.page.locator('a.btn[title="Continue"]')

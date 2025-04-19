@@ -2,33 +2,32 @@ class Product:
     def __init__(self, page):
         self.page = page
 
-    # For product search results grid: select "Viva Glam Lipstick"
-    def viva_glam_lipstick_link(self):
-        return self.page.locator('a[title="Viva Glam Lipstick"]')
+    # --- Product Search Page (grid) ---
 
-    # Lipstick product page
-    def color_dropdown(self):
-        return self.page.locator('select#option305')
+    def get_search_grid_product_by_title(self, title):
+        return self.page.locator(f'a.prdocutname[title="{title}"]')
 
-    def quantity_box(self):
-        return self.page.locator('input#product_quantity')
+    def get_search_grid_add_to_cart_by_product_id(self, product_id):
+        # button is an <a class="productcart" data-id="...">
+        return self.page.locator(f'a.productcart[data-id="{product_id}"]')
 
-    # Add to cart button (only one in product data sheet)
-    def add_to_cart_data_sheet(self):
+    # --- Product Details Page (datasheet) ---
+
+    def get_datasheet_add_to_cart(self):
+        # The only Add to Cart is <a class="cart"> with onclick containing 'form.submit()'
         return self.page.locator('ul.productpagecart a.cart')
 
-    # In grid results (search Lip): Add to cart for each product (take for Viva Glam)
-    def viva_glam_grid_add_to_cart(self):
-        # the "Add to cart" for Viva Glam Lipstick product_id=59 in search grid
-        return self.page.locator('a[data-id="59"].productcart')
+    def get_colour_dropdown(self):
+        return self.page.locator('select#option305')
 
-    # Result 'no product'
-    def no_product_found_msg(self):
-        return self.page.locator('div:has-text("There is no product that matches the search criteria.")')
+    def get_quantity_input(self):
+        return self.page.locator('input#product_quantity')
 
-    # Fill search box in the header
-    def fill_search_bar(self, keyword):
-        bar = self.page.locator('input#filter_keyword')
-        bar.click()
-        bar.fill(keyword)
-        bar.press('Enter')
+    def get_total_price_label(self):
+        # Inside label, class 'total-price'
+        return self.page.locator('span.total-price')
+
+    # --- "There is no product..." message ---
+
+    def get_no_product_message(self):
+        return self.page.locator('div.contentpanel div:has-text("There is no product that matches the search criteria.")')
