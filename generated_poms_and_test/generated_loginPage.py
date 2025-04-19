@@ -1,32 +1,32 @@
 class LoginPage:
-    LOGIN_OR_REGISTER_SELECTOR = 'a[href="https://automationteststore.com/index.php?rt=account/login"]'
-    USERNAME_INPUT_SELECTOR = 'input#loginFrm_loginname'
-    PASSWORD_INPUT_SELECTOR = 'input#loginFrm_password'
-    LOGIN_BUTTON_SELECTOR = 'button[title="Login"]'
-    LOGIN_ERROR_SELECTOR = 'div.alert.alert-error.alert-danger'
-
     def __init__(self, page):
         self.page = page
 
-    def click_login_or_register(self):
-        self.page.wait_for_selector(self.LOGIN_OR_REGISTER_SELECTOR, timeout=15000)
-        self.page.click(self.LOGIN_OR_REGISTER_SELECTOR)
+    # Header elements
+    def get_login_or_register_link(self):
+        return self.page.locator('ul#customer_menu_top a[href*="account/login"]')
 
-    def fill_username(self, username):
-        self.page.wait_for_selector(self.USERNAME_INPUT_SELECTOR, timeout=15000)
-        self.page.fill(self.USERNAME_INPUT_SELECTOR, username)
+    def get_search_bar_input(self):
+        return self.page.locator('input#filter_keyword')
 
-    def fill_password(self, password):
-        self.page.wait_for_selector(self.PASSWORD_INPUT_SELECTOR, timeout=15000)
-        self.page.fill(self.PASSWORD_INPUT_SELECTOR, password)
+    def get_top_menu_checkout(self):
+        return self.page.locator('a.menu_checkout')
 
-    def click_login_button(self):
-        self.page.wait_for_selector(self.LOGIN_BUTTON_SELECTOR, timeout=15000)
-        self.page.click(self.LOGIN_BUTTON_SELECTOR)
+    # Login form elements
+    def get_login_name_input(self):
+        return self.page.locator('input#loginFrm_loginname')
 
-    def is_error_message_visible(self):
-        try:
-            self.page.wait_for_selector(self.LOGIN_ERROR_SELECTOR, timeout=10000)
-            return True
-        except Exception:
-            return False
+    def get_password_input(self):
+        return self.page.locator('input#loginFrm_password')
+
+    def get_login_button(self):
+        # There may be multiple buttons with title='Login', but this is under fieldset in the login box
+        return self.page.locator('fieldset button[title="Login"]')
+
+    def get_login_error(self):
+        return self.page.locator('div.alert.alert-error.alert-danger')
+
+    # Detect "My Account" (on the account dashboard)
+    def get_my_account_dashboard_link(self):
+        # Find by side_account_list > selected element
+        return self.page.locator('ul.side_account_list li.selected a[href*="account/account"]')

@@ -1,34 +1,33 @@
 class Product:
-    SEARCH_INPUT_SELECTOR = 'input#filter_keyword'
-    SEARCH_BUTTON_SELECTOR = 'div.button-in-search'
-    ENTER_KEY = 'Enter'
-    ADD_TO_CART_BUTTON_GRID = 'a.productcart[data-id="59"]'
-    ADD_TO_CART_BUTTON_DATASHEET = 'ul.productpagecart > li > a.cart'
-    GRID_VIVA_GLAM_LIPSTICK_LINK = 'a[title="Viva Glam Lipstick"]'
-    NO_RESULTS_DIV = 'div.contentpanel > div:has-text("There is no product that matches the search criteria.")'
-
     def __init__(self, page):
         self.page = page
 
-    def search_for_product(self, keyword):
-        self.page.wait_for_selector(self.SEARCH_INPUT_SELECTOR, timeout=15000)
-        self.page.click(self.SEARCH_INPUT_SELECTOR)
-        self.page.fill(self.SEARCH_INPUT_SELECTOR, keyword)
-        self.page.keyboard.press(self.ENTER_KEY)
+    # --- Product Search Page (grid) ---
 
-    def click_add_to_cart_from_grid_viva_glam_lipstick(self):
-        self.page.wait_for_selector(self.GRID_VIVA_GLAM_LIPSTICK_LINK, timeout=15000)
-        self.page.click(self.GRID_VIVA_GLAM_LIPSTICK_LINK)
-        self.page.wait_for_selector(self.ADD_TO_CART_BUTTON_DATASHEET, timeout=15000)
-        self.page.click(self.ADD_TO_CART_BUTTON_DATASHEET)
+    def get_search_grid_product_by_title(self, title):
+        return self.page.locator(f'a.prdocutname[title="{title}"]')
 
-    def click_add_to_cart_from_datasheet(self):
-        self.page.wait_for_selector(self.ADD_TO_CART_BUTTON_DATASHEET, timeout=15000)
-        self.page.click(self.ADD_TO_CART_BUTTON_DATASHEET)
+    def get_search_grid_add_to_cart_by_product_id(self, product_id):
+        # button is an <a class="productcart" data-id="...">
+        return self.page.locator(f'a.productcart[data-id="{product_id}"]')
 
-    def is_no_product_found_message_visible(self):
-        try:
-            self.page.wait_for_selector(self.NO_RESULTS_DIV, timeout=10000)
-            return True
-        except Exception:
-            return False
+    # --- Product Details Page (datasheet) ---
+
+    def get_datasheet_add_to_cart(self):
+        # The only Add to Cart is <a class="cart"> with onclick containing 'form.submit()'
+        return self.page.locator('ul.productpagecart a.cart')
+
+    def get_colour_dropdown(self):
+        return self.page.locator('select#option305')
+
+    def get_quantity_input(self):
+        return self.page.locator('input#product_quantity')
+
+    def get_total_price_label(self):
+        # Inside label, class 'total-price'
+        return self.page.locator('span.total-price')
+
+    # --- "There is no product..." message ---
+
+    def get_no_product_message(self):
+        return self.page.locator('div.contentpanel div:has-text("There is no product that matches the search criteria.")')

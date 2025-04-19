@@ -1,47 +1,26 @@
 class Cart:
-    MY_ACCOUNT_HEADING2_SELECTOR = 'h2.heading2:has-text("My Account")'
-    CHECKOUT_BUTTON_SELECTOR = 'a#cart_checkout1'
-    UPDATE_BUTTON_SELECTOR = 'button#cart_update'
-    CONFIRM_ORDER_BUTTON_SELECTOR = 'button#checkout_btn'
-    ORDER_SUCCESS_SELECTOR = 'h1.heading1 span.maintext:has-text("Your Order Has Been Processed!")'
-    CONTINUE_IN_CART_SELECTOR = 'div.col-md-12.col-xs-12.mt20 h1.heading1 span.maintext:has-text("Shopping Cart")'
-    CART_EMPTY_MESSAGE = 'div.contentpanel:has-text("Your shopping cart is empty!")'
-
     def __init__(self, page):
         self.page = page
 
-    def is_my_account_page_visible(self):
-        try:
-            self.page.wait_for_selector(self.MY_ACCOUNT_HEADING2_SELECTOR, timeout=10000)
-            return True
-        except Exception:
-            return False
+    # Checkout button in cart
+    def get_checkout_button(self):
+        return self.page.locator('a#cart_checkout1[title="Checkout"]')
 
-    def is_checkout_button_visible(self):
-        try:
-            self.page.wait_for_selector(self.CHECKOUT_BUTTON_SELECTOR, timeout=10000)
-            return True
-        except Exception:
-            return False
+    def get_update_button(self):
+        return self.page.locator('button#cart_update[title="Update"]')
 
-    def click_checkout_button(self):
-        self.page.wait_for_selector(self.CHECKOUT_BUTTON_SELECTOR, timeout=15000)
-        self.page.click(self.CHECKOUT_BUTTON_SELECTOR)
+    # Confirm Order
+    def get_confirm_order_button(self):
+        return self.page.locator('button#checkout_btn[title="Confirm Order"]')
 
-    def click_confirm_order(self):
-        self.page.wait_for_selector(self.CONFIRM_ORDER_BUTTON_SELECTOR, timeout=15000)
-        self.page.click(self.CONFIRM_ORDER_BUTTON_SELECTOR)
+    # "Order Success" - detect after order is processed, heading1 with fa-thumbs-up
+    def get_success_heading(self):
+        return self.page.locator('h1.heading1 .fa-thumbs-up')
 
-    def is_order_confirmed_visible(self):
-        try:
-            self.page.wait_for_selector(self.ORDER_SUCCESS_SELECTOR, timeout=10000)
-            return True
-        except Exception:
-            return False
+    # Empty Cart detection (uses fa-frown)
+    def get_empty_cart_heading(self):
+        return self.page.locator('h1.heading1 .fa-frown')
 
-    def is_cart_empty_message_visible(self):
-        try:
-            self.page.wait_for_selector(self.CART_EMPTY_MESSAGE, timeout=10000)
-            return True
-        except Exception:
-            return False
+    # "Continue" button after success or empty cart
+    def get_continue_button(self):
+        return self.page.locator('a.btn[title="Continue"]')
