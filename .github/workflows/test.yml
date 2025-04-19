@@ -32,6 +32,14 @@ jobs:
         run: |
           PYTHONPATH=. pytest generated_poms_and_test/ai_code_generator.py > ai_generator.txt || true
 
+      - name: Commit the changes to repo
+        run: |
+          git config --global user.name "csabida01"
+          git config --global user.email "csabida01@gmail.com"
+          git add generated_poms_and_test/
+          git commit -m "Update generated POMs and tests" || echo "No changes to commit"
+          git push
+
       - name: Run AI test
         run: |
           PYTHONPATH=. pytest generated_poms_and_test/generated_test_main.py > ai_test_results.txt || true
