@@ -2,25 +2,26 @@ class Cart:
     def __init__(self, page):
         self.page = page
 
-    # Checkout button in cart
-    def get_checkout_button(self):
-        return self.page.locator('a#cart_checkout1[title="Checkout"]')
+    # Cart page - checkout button
+    def checkout_button(self):
+        return self.page.locator('a#cart_checkout1')
 
-    def get_update_button(self):
-        return self.page.locator('button#cart_update[title="Update"]')
+    # Cart page - update button
+    def update_button(self):
+        return self.page.locator('button#cart_update')
 
-    # Confirm Order
-    def get_confirm_order_button(self):
-        return self.page.locator('button#checkout_btn[title="Confirm Order"]')
+    # Confirm page - confirm order button
+    def confirm_order_btn(self):
+        return self.page.locator('button#checkout_btn')
 
-    # "Order Success" - detect after order is processed, heading1 with fa-thumbs-up
-    def get_success_heading(self):
-        return self.page.locator('h1.heading1 .fa-thumbs-up')
+    # Empty cart message
+    def empty_cart_message(self):
+        return self.page.locator('h1.heading1 span.maintext', has_text="Shopping Cart")
 
-    # Empty Cart detection (uses fa-frown)
-    def get_empty_cart_heading(self):
-        return self.page.locator('h1.heading1 .fa-frown')
+    # Continue button (after order processed or empty cart)
+    def continue_button(self):
+        return self.page.locator('a.btn.btn-default.mr10[title="Continue"]')
 
-    # "Continue" button after success or empty cart
-    def get_continue_button(self):
-        return self.page.locator('a.btn[title="Continue"]')
+    # Order processed heading
+    def order_processed_heading(self):
+        return self.page.locator('h1.heading1 span.maintext', has_text="Your Order Has Been Processed!")

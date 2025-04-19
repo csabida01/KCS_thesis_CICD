@@ -2,32 +2,25 @@ class Product:
     def __init__(self, page):
         self.page = page
 
-    # --- Product Search Page (grid) ---
-
-    def get_search_grid_product_by_title(self, title):
-        return self.page.locator(f'a.prdocutname[title="{title}"]')
-
-    def get_search_grid_add_to_cart_by_product_id(self, product_id):
-        # button is an <a class="productcart" data-id="...">
-        return self.page.locator(f'a.productcart[data-id="{product_id}"]')
-
-    # --- Product Details Page (datasheet) ---
-
-    def get_datasheet_add_to_cart(self):
-        # The only Add to Cart is <a class="cart"> with onclick containing 'form.submit()'
+    # Lipstick datasheet add to cart
+    def datasheet_add_to_cart(self):
         return self.page.locator('ul.productpagecart a.cart')
 
-    def get_colour_dropdown(self):
-        return self.page.locator('select#option305')
+    # On grid, add product by data-id (specific to search results)
+    def grid_add_to_cart_viva_glam(self):
+        return self.page.locator('a.productcart[data-id="59"]')
 
-    def get_quantity_input(self):
-        return self.page.locator('input#product_quantity')
+    def viva_glam_link_in_search_results(self):
+        return self.page.locator('a[title="Viva Glam Lipstick"]').first
 
-    def get_total_price_label(self):
-        # Inside label, class 'total-price'
-        return self.page.locator('span.total-price')
+    # Lip search results
+    def prdocutname_link(self, title):
+        return self.page.locator(f'a.prdocutname[title="{title}"]').first
 
-    # --- "There is no product..." message ---
+    # No product found message
+    def no_results_found(self):
+        return self.page.locator('div', has_text="There is no product that matches the search criteria.")
 
-    def get_no_product_message(self):
-        return self.page.locator('div.contentpanel div:has-text("There is no product that matches the search criteria.")')
+    # Search results grid
+    def product_grid(self):
+        return self.page.locator('div.thumbnails.grid.row.list-inline')
