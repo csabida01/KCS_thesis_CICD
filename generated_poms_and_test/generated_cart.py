@@ -1,47 +1,37 @@
 class Cart:
     def __init__(self, page):
         self.page = page
-        # Checkout button in cart
-        self.checkout_btn_selector = "#cart_checkout1"
-        # Confirm Order
-        self.confirm_order_btn_selector = "#checkout_btn"
-        # Empty cart message
-        self.empty_cart_message_selector = "h1.heading1 .maintext i.fa-frown"
-        # Order Success: 
-        self.order_success_heading_selector = "h1.heading1 .maintext i.fa-thumbs-up"
-        self.no_results_message_selector = "div.contentpanel div:has-text('There is no product that matches the search criteria.')"
-        # My Account: take "Edit account details"
-        self.account_edit_details_selector = "a[href*='account/edit']"
 
-    def checkout_visible(self):
-        self.page.wait_for_selector(self.checkout_btn_selector, timeout=10000)
-        return self.page.is_visible(self.checkout_btn_selector)
+    def click_checkout(self):
+        # Checkout in the cart page's top right orange button
+        self.page.locator('a#cart_checkout1.btn.btn-orange[title="Checkout"]').wait_for(state="visible", timeout=10000)
+        self.page.locator('a#cart_checkout1.btn.btn-orange[title="Checkout"]').click()
 
-    def proceed_checkout(self):
-        self.page.wait_for_selector(self.checkout_btn_selector, timeout=10000)
-        self.page.click(self.checkout_btn_selector)
+    def click_update(self):
+        self.page.locator('button#cart_update.btn.btn-default[title="Update"]').wait_for(state="visible", timeout=10000)
+        self.page.locator('button#cart_update.btn.btn-default[title="Update"]').click()
 
-    def wait_for_confirm_order(self):
-        self.page.wait_for_selector(self.confirm_order_btn_selector, timeout=10000)
+    def is_my_account_visible(self):
+        # <h2 class="heading2"><span>My Account</span></h2>
+        self.page.locator('h2.heading2 span').wait_for(state="visible", timeout=10000)
+        return self.page.inner_text('h2.heading2 span') == "My Account"
 
-    def confirm_order(self):
-        self.page.wait_for_selector(self.confirm_order_btn_selector, timeout=10000)
-        self.page.click(self.confirm_order_btn_selector)
+    def checkout_confirm_order(self):
+        # Button on final checkout page
+        self.page.locator('button#checkout_btn.btn.btn-orange[title="Confirm Order"]').wait_for(state="visible", timeout=10000)
+        self.page.locator('button#checkout_btn.btn.btn-orange[title="Confirm Order"]').click()
 
-    def is_order_success(self):
-        self.page.wait_for_selector(self.order_success_heading_selector, timeout=10000)
-        return self.page.is_visible(self.order_success_heading_selector)
+    def is_cart_empty(self):
+        # "Your shopping cart is empty!" text
+        self.page.locator('div.contentpanel').wait_for(state="visible", timeout=10000)
+        return "Your shopping cart is empty!" in self.page.inner_text('div.contentpanel')
 
-    def is_empty_cart(self):
-        self.page.wait_for_selector("h1.heading1 .maintext", timeout=10000)
-        text = self.page.inner_text("h1.heading1 .maintext")
-        return "Shopping Cart" in text
+    def is_checkout_button_appears(self):
+        # on cart page, check if checkout button exists
+        self.page.locator('a#cart_checkout1.btn.btn-orange[title="Checkout"]').wait_for(state="visible", timeout=10000)
+        return self.page.is_visible('a#cart_checkout1.btn.btn-orange[title="Checkout"]')
 
-    def search_no_results_visible(self):
-        self.page.wait_for_selector("div.contentpanel", timeout=10000)
-        text = self.page.inner_text("div.contentpanel")
-        return "There is no product that matches the search criteria." in text
-
-    def account_edit_details_visible(self):
-        self.page.wait_for_selector(self.account_edit_details_selector, timeout=10000)
-        return self.page.is_visible(self.account_edit_details_selector)
+    def order_processed_successfully(self):
+        # <span class="maintext"><i class="fa fa-thumbs-up"></i> Your Order Has Been Processed!</span>
+        self.page.locator('span.maintext').wait_for(state="visible", timeout=10000)
+        return "Your Order Has Been Processed!" in self.page.inner_text('span.maintext')
