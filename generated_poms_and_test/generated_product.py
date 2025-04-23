@@ -1,39 +1,48 @@
 class Product:
     def __init__(self, page):
         self.page = page
+        # Header search bar
+        self.search_input = 'form#search_form input#filter_keyword'
+        # Lipstick Page
+        self.add_to_cart_single = 'ul.productpagecart a.cart'
+        # Lip search results
+        self.lip_grid = 'div.thumbnails.grid'
+        self.lipstick_result_link = 'a[title="Viva Glam Lipstick"]'
+        # Link to cart from grid
+        self.add_to_cart_result_grid = 'div.thumbnails.grid div[data-id="59"]'
+        self.productcart_selector = 'a.productcart[data-id="59"]'
+        # Lipstick datasheet page - Add to wishlist etc. not strictly used in test
 
-    # PRODUCT GRID
-    def click_product_by_title(self, product_title):
-        locator = f'a[title="{product_title}"]'
-        self.page.locator(locator).wait_for(state="visible", timeout=10000)
-        self.page.locator(locator).click()
+        # No search result
+        self.no_product_msg = 'div.contentpanel > div:has-text("There is no product that matches the search criteria.")'
 
-    def add_to_cart_from_grid_by_product_id(self, product_id):
-        # <a data-id="59" ... class="productcart">
-        locator = f'a.productcart[data-id="{product_id}"]'
-        self.page.locator(locator).wait_for(state="visible", timeout=10000)
-        self.page.locator(locator).click()
+    def search_and_open(self, term, open_first_match=False, open_exact_title=None):
+        self.page.wait_for_selector(self.search_input, timeout=10000)
+        self.page.fill(self.search_input, term)
+        self.page.keyboard.press("Enter")
+        if open_exact_title:
+            self.page.wait_for_selector(self.lip_grid, timeout=10000)
+            self.page.wait_for_selector(f'a[title="{open_exact_title}"]', timeout=10000)
+            self.page.click(f'a[title="{open_exact_title}"]')
+        elif open_first_match:
+            self.page.wait_for_selector(self.lip_grid, timeout=10000)
+            first_product = self.page.query_selector_all('div.thumbnails.grid a.prdocutname')[0]
+            first_product.click()
 
-    # PRODUCT DETAILS PAGE
-    def add_to_cart_from_details(self):
-        # In Lipstick details page
-        self.page.locator('ul.productpagecart li a.cart').wait_for(state="visible", timeout=10000)
-        self.page.locator('ul.productpagecart li a.cart').click()
+    def click_add_to_cart_on_product(self):
+        self.page.wait_for_selector(self.add_to_cart_single, timeout=10000)
+        self.page.click(self.add_to_cart_single)
 
-    # CART / CHECKOUT APPEARANCE AFTER ADD
-    def is_checkout_button_appears(self):
-        self.page.locator('a#cart_checkout1.btn.btn-orange[title="Checkout"]').wait_for(state="visible", timeout=10000)
-        return self.page.is_visible('a#cart_checkout1.btn.btn-orange[title="Checkout"]')
+    def click_add_to_cart_from_grid_for_viva_glam(self):
+        self.page.wait_for_selector(self.lip_grid, timeout=10000)
+        self.page.wait_for_selector(self.productcart_selector, timeout=10000)
+        self.page.click(self.productcart_selector)
 
-    def get_no_results_text(self):
-        self.page.locator('div.contentpanel > div').wait_for(state="visible", timeout=10000)
-        return self.page.inner_text('div.contentpanel > div')
-
-    # Lipstick: select a color (if needed)
-    def select_color(self, color_option_text):
-        self.page.locator('select#option305').wait_for(state="visible", timeout=10000)
-        self.page.select_option('select#option305', label=color_option_text)
-
-    def set_quantity(self, quantity):
-        self.page.locator('input#product_quantity').wait_for(state="visible", timeout=10000)
-        self.page.fill('input#product_quantity', str(quantity))
+    def assert_no_search_results(self):
+        self.page.wait_for_selector('div.contentpanel', timeout=10000)
+        try:
+            self.page.wait_for_selector('div.contentpanel > div', timeout=3000, state="visible")
+            text = self.page.inner_text('div.contentpanel > div')
+            return 'no product that matches the search criteria' in text
+        except:
+            return False

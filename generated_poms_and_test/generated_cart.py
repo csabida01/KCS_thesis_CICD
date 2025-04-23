@@ -1,37 +1,44 @@
 class Cart:
     def __init__(self, page):
         self.page = page
+        # Topbar Checkout button (first of the menu_checkout)
+        self.checkout_header_link = 'a.menu_checkout'
+        # Confirm order
+        self.confirm_order_btn = 'button#checkout_btn'
+        # Cart page
+        self.cart_checkout_btn = 'a#cart_checkout1'
+        self.cart_update_btn = 'button#cart_update'
+        # "Empty cart" indication
+        self.empty_cart_header = 'h1.heading1 > span.maintext'
+        # "Order processed" page
+        self.order_processed_header = 'h1.heading1 span.maintext'
 
-    def click_checkout(self):
-        # Checkout in the cart page's top right orange button
-        self.page.locator('a#cart_checkout1.btn.btn-orange[title="Checkout"]').wait_for(state="visible", timeout=10000)
-        self.page.locator('a#cart_checkout1.btn.btn-orange[title="Checkout"]').click()
+    def go_to_cart_via_header_checkout(self):
+        self.page.wait_for_selector(self.checkout_header_link, timeout=10000)
+        self.page.click(self.checkout_header_link)
 
-    def click_update(self):
-        self.page.locator('button#cart_update.btn.btn-default[title="Update"]').wait_for(state="visible", timeout=10000)
-        self.page.locator('button#cart_update.btn.btn-default[title="Update"]').click()
+    def is_checkout_button_visible(self):
+        # Only check visibility, don't click
+        try:
+            self.page.wait_for_selector(self.cart_checkout_btn, timeout=5000)
+            return self.page.is_visible(self.cart_checkout_btn)
+        except:
+            return False
 
-    def is_my_account_visible(self):
-        # <h2 class="heading2"><span>My Account</span></h2>
-        self.page.locator('h2.heading2 span').wait_for(state="visible", timeout=10000)
-        return self.page.inner_text('h2.heading2 span') == "My Account"
+    def click_checkout_button(self):
+        self.page.wait_for_selector(self.cart_checkout_btn, timeout=10000)
+        self.page.click(self.cart_checkout_btn)
 
-    def checkout_confirm_order(self):
-        # Button on final checkout page
-        self.page.locator('button#checkout_btn.btn.btn-orange[title="Confirm Order"]').wait_for(state="visible", timeout=10000)
-        self.page.locator('button#checkout_btn.btn.btn-orange[title="Confirm Order"]').click()
+    def confirm_order(self):
+        self.page.wait_for_selector(self.confirm_order_btn, timeout=15000)
+        self.page.click(self.confirm_order_btn)
 
-    def is_cart_empty(self):
-        # "Your shopping cart is empty!" text
-        self.page.locator('div.contentpanel').wait_for(state="visible", timeout=10000)
-        return "Your shopping cart is empty!" in self.page.inner_text('div.contentpanel')
+    def is_empty_cart(self):
+        self.page.wait_for_selector(self.empty_cart_header, timeout=10000)
+        msg = self.page.inner_text(self.empty_cart_header)
+        return 'Shopping Cart' in msg and self.page.content().find('Your shopping cart is empty!') != -1
 
-    def is_checkout_button_appears(self):
-        # on cart page, check if checkout button exists
-        self.page.locator('a#cart_checkout1.btn.btn-orange[title="Checkout"]').wait_for(state="visible", timeout=10000)
-        return self.page.is_visible('a#cart_checkout1.btn.btn-orange[title="Checkout"]')
-
-    def order_processed_successfully(self):
-        # <span class="maintext"><i class="fa fa-thumbs-up"></i> Your Order Has Been Processed!</span>
-        self.page.locator('span.maintext').wait_for(state="visible", timeout=10000)
-        return "Your Order Has Been Processed!" in self.page.inner_text('span.maintext')
+    def is_order_processed(self):
+        self.page.wait_for_selector(self.order_processed_header, timeout=10000)
+        txt = self.page.inner_text(self.order_processed_header)
+        return 'Your Order Has Been Processed!' in txt

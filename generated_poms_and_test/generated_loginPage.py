@@ -1,38 +1,38 @@
 class LoginPage:
     def __init__(self, page):
         self.page = page
+        # Header
+        self.login_or_register_link = 'div#customernav ul#customer_menu_top a[href*="account/login"]'
+        # Login form
+        self.username_input = '#loginFrm_loginname'
+        self.password_input = '#loginFrm_password'
+        self.login_button = 'button[title="Login"]'
+        self.login_error = 'div.alert.alert-error.alert-danger'
+        # From 'my account' snippet, for successful login assertion
+        self.account_dashboard_elem = 'ul.side_account_list li.selected a[href*="account/account"]'
 
-    # HEADER NAV
-    def login_or_register(self):
-        # "Login or register" link in top header
-        self.page.locator('a[href="https://automationteststore.com/index.php?rt=account/login"]').first.wait_for(state="visible", timeout=10000)
-        self.page.locator('a[href="https://automationteststore.com/index.php?rt=account/login"]').first.click()
+    def goto_login(self):
+        self.page.wait_for_selector(self.login_or_register_link, timeout=10000)
+        self.page.click(self.login_or_register_link)
 
-    # LOGIN FORM
-    def fill_login_name(self, username):
-        self.page.locator('input#loginFrm_loginname').wait_for(state="visible", timeout=10000)
-        self.page.fill('input#loginFrm_loginname', username)
+    def login(self, username, password):
+        self.page.wait_for_selector(self.username_input, timeout=10000)
+        self.page.fill(self.username_input, username)
+        self.page.fill(self.password_input, password)
+        self.page.wait_for_selector(self.login_button, timeout=10000)
+        self.page.click(self.login_button)
 
-    def fill_password(self, password):
-        self.page.locator('input#loginFrm_password').wait_for(state="visible", timeout=10000)
-        self.page.fill('input#loginFrm_password', password)
+    def is_login_error_shown(self):
+        try:
+            self.page.wait_for_selector(self.login_error, timeout=5000)
+            return True
+        except:
+            return False
 
-    def submit(self):
-        self.page.locator('button.btn.btn-orange[title="Login"]').wait_for(state="visible", timeout=10000)
-        self.page.locator('button.btn.btn-orange[title="Login"]').click()
-
-    # ERROR / ALERT
-    def get_login_error(self):
-        # Wait until the error box is visible (if any)
-        self.page.locator('div.alert.alert-error.alert-danger').wait_for(state="visible", timeout=10000)
-        return self.page.inner_text('div.alert.alert-error.alert-danger')
-
-    # SEARCH
-    def search_for(self, search_text):
-        self.page.locator('input#filter_keyword').wait_for(state="visible", timeout=10000)
-        self.page.fill('input#filter_keyword', search_text)
-        self.page.keyboard.press("Enter")
-
-    def click_checkout_top_menu(self):
-        self.page.locator('a.menu_checkout').first.wait_for(state="visible", timeout=10000)
-        self.page.locator('a.menu_checkout').first.click()
+    def is_logged_in(self):
+        # Use selector uniquely present on "My Account" page
+        try:
+            self.page.wait_for_selector(self.account_dashboard_elem, timeout=10000)
+            return True
+        except:
+            return False
