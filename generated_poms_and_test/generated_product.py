@@ -2,37 +2,31 @@ class Product:
     def __init__(self, page):
         self.page = page
 
-    # Lipstick datasheet page
-    ADD_TO_CART_LINK = "ul.productpagecart a.cart"
-    QTY_INPUT = "input#product_quantity"
-    COLOR_DROPDOWN = "select#option305"
+    # Search bar
+    def fill_search_bar(self, query):
+        self.page.wait_for_selector('#filter_keyword', timeout=10000)
+        self.page.fill('#filter_keyword', query)
 
-    # Search results (grid)
-    # For the "Viva Glam Lipstick"
-    VIVA_GLAM_LIPSTICK_LINK = "a[title='Viva Glam Lipstick']"
-    VIVA_GLAM_LIPSTICK_ADD_TO_CART = "a.productcart[data-id='59']"
+    def press_enter_search(self):
+        self.page.keyboard.press("Enter")
 
-    # For empty results
-    EMPTY_RESULT_ALERT = "div.contentpanel > div:has-text('There is no product that matches the search criteria.')"
+    # Results page: select product by title (Viva Glam Lipstick)
+    def click_product_by_title(self, title):
+        locator = f'a[title="{title}"]'
+        self.page.wait_for_selector(locator, timeout=10000)
+        self.page.click(locator)
 
-    def add_current_to_cart(self, qty=None, color=None):
-        if qty is not None:
-            self.page.wait_for_selector(self.QTY_INPUT)
-            self.page.fill(self.QTY_INPUT, str(qty))
-        if color is not None:
-            self.page.wait_for_selector(self.COLOR_DROPDOWN)
-            self.page.select_option(self.COLOR_DROPDOWN, color)
-        self.page.wait_for_selector(self.ADD_TO_CART_LINK)
-        self.page.click(self.ADD_TO_CART_LINK)
+    # Add to cart in detailed product page
+    def click_add_to_cart_from_details(self):
+        self.page.wait_for_selector('ul.productpagecart a.cart', timeout=10000)
+        self.page.click('ul.productpagecart a.cart')
 
-    def select_viva_glam_lipstick_from_search(self):
-        self.page.wait_for_selector(self.VIVA_GLAM_LIPSTICK_LINK)
-        self.page.click(self.VIVA_GLAM_LIPSTICK_LINK)
+    # Add to cart from grid by product id (e.g. data-id="59")
+    def click_add_to_cart_from_grid(self, product_id):
+        selector = f'div.pricetag.jumbotron a.productcart[data-id="{product_id}"]'
+        self.page.wait_for_selector(selector, timeout=10000)
+        self.page.click(selector)
 
-    def add_viva_glam_lipstick_to_cart_from_search(self):
-        self.page.wait_for_selector(self.VIVA_GLAM_LIPSTICK_ADD_TO_CART)
-        self.page.click(self.VIVA_GLAM_LIPSTICK_ADD_TO_CART)
-
-    def is_empty_results_alert_visible(self):
-        self.page.wait_for_selector("div.contentpanel")
-        return "There is no product that matches the search criteria." in self.page.locator("div.contentpanel").inner_text()
+    # No results in search
+    def is_no_products_message_visible(self):
+        return self.page.is_visible('div.contentpanel >> text="There is no product that matches the search criteria."')
