@@ -2,29 +2,24 @@ class LoginPage:
     def __init__(self, page):
         self.page = page
 
-    # Header login/register
-    def click_login_or_register(self):
-        self.page.wait_for_selector('a[href="https://automationteststore.com/index.php?rt=account/login"]', timeout=10000)
-        self.page.click('a[href="https://automationteststore.com/index.php?rt=account/login"]')
+    # HEADER
+    def goto_login(self):
+        self.page.wait_for_selector('.navbar-right .block_2 #customernav #customer_menu_top > li > a')
+        self.page.click('.navbar-right .block_2 #customernav #customer_menu_top > li > a')
 
-    # Username, password
-    def fill_login_name(self, username):
-        self.page.wait_for_selector('#loginFrm_loginname', timeout=10000)
+    # LOGIN BOX
+    def login(self, username, password):
+        self.page.wait_for_selector('#loginFrm_loginname')
         self.page.fill('#loginFrm_loginname', username)
-
-    def fill_password(self, password):
-        self.page.wait_for_selector('#loginFrm_password', timeout=10000)
         self.page.fill('#loginFrm_password', password)
+        self.page.wait_for_selector('button.btn-orange[title="Login"]')
+        self.page.click('button.btn-orange[title="Login"]')
 
-    # Login button
-    def click_login_button(self):
-        self.page.wait_for_selector('button[title="Login"]', timeout=10000)
-        self.page.click('button[title="Login"]')
+    def get_login_error(self):
+        self.page.wait_for_selector('div.alert.alert-error.alert-danger')
+        return self.page.inner_text('div.alert.alert-error.alert-danger')
 
-    # Login error
-    def is_login_error_visible(self):
-        return self.page.is_visible('div.alert.alert-error.alert-danger')
-
-    # Check My Account any element (e.g. Logoff link)
-    def is_my_account_visible(self):
-        return self.page.is_visible('a[href="https://automationteststore.com/index.php?rt=account/logout"]')
+    # MY ACCOUNT PAGE
+    def is_on_my_account(self):
+        self.page.wait_for_selector('div.myaccountbox ul.side_account_list li.selected a')
+        return self.page.is_visible('div.myaccountbox ul.side_account_list li.selected a')

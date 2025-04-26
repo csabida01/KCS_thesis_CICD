@@ -2,23 +2,28 @@ class Cart:
     def __init__(self, page):
         self.page = page
 
-    # Checkout button (pull-right panel)
-    def is_checkout_button_visible(self):
+    # FROM HEADER: click 'Checkout'
+    def goto_checkout_header(self):
+        self.page.wait_for_selector('a.menu_checkout')
+        self.page.click('a.menu_checkout')
+
+    # CHECKOUT PAGE
+    def is_checkout_available(self):
+        self.page.wait_for_selector('a#cart_checkout1')
         return self.page.is_visible('a#cart_checkout1')
 
-    def click_checkout_button(self):
-        self.page.wait_for_selector('a#cart_checkout1', timeout=10000)
-        self.page.click('a#cart_checkout1')
-
-    # Confirm order page
-    def is_confirm_order_button_visible(self):
-        return self.page.is_visible('button#checkout_btn')
-
-    def click_confirm_order_button(self):
-        self.page.wait_for_selector('button#checkout_btn', timeout=10000)
+    # CHECKOUT PAGE: Confirm Order
+    def click_confirm_order(self):
+        self.page.wait_for_selector('button#checkout_btn')
         self.page.click('button#checkout_btn')
 
-    # Cart empty message
-    def is_cart_empty_message_visible(self):
-        # Looks for Shopping Cart header + the text 'Your shopping cart is empty!'
-        return self.page.is_visible('h1.heading1 span.maintext >> text="Shopping Cart"') and self.page.is_visible('div.contentpanel >> text="Your shopping cart is empty!"')
+    # CHECKOUT PAGE: Update cart
+    def click_update(self):
+        self.page.wait_for_selector('button#cart_update')
+        self.page.click('button#cart_update')
+
+    # EMPTY CART
+    def is_cart_empty(self):
+        self.page.wait_for_selector('h1.heading1 span.maintext')
+        text = self.page.inner_text('h1.heading1 span.maintext')
+        return "Shopping Cart" in text and "empty" in self.page.inner_text('div.contentpanel').lower()

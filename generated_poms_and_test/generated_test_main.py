@@ -1,80 +1,69 @@
 import pytest
 from playwright.sync_api import expect
-
 from generated_loginPage import LoginPage
 from generated_product import Product
 from generated_cart import Cart
 
-BASE_URL = "https://automationteststore.com/"
+URL = "https://automationteststore.com/"
+VALID_USERNAME = "csaba.kelemen"
+VALID_PASSWORD = "tesztteszt1"
 
-def test_login_with_invalid_credentials(set_up_fresh_browser):
+def test_invalid_login(set_up_fresh_browser):
     page = set_up_fresh_browser
-    page.goto(BASE_URL)
+    page.goto(URL)
     login = LoginPage(page)
-    login.click_login_or_register()
-    login.fill_login_name("wronguser")
-    login.fill_password("wrongpass")
-    login.click_login_button()
-    assert login.is_login_error_visible(), "Login error message should be visible"
+    login.goto_login()
+    login.login('invaliduser', 'invalidpass')
+    assert "Error" in login.get_login_error()
 
-def test_login_with_valid_credentials(set_up_fresh_browser):
+def test_valid_login(set_up_fresh_browser):
     page = set_up_fresh_browser
-    page.goto(BASE_URL)
+    page.goto(URL)
     login = LoginPage(page)
-    login.click_login_or_register()
-    login.fill_login_name("csaba.kelemen")
-    login.fill_password("tesztteszt1")
-    login.click_login_button()
-    assert login.is_my_account_visible(), "Logoff link should be visible on My Account"
+    login.goto_login()
+    login.login(VALID_USERNAME, VALID_PASSWORD)
+    assert login.is_on_my_account()
 
-def test_search_lipstick_and_add_to_cart(set_up_logged_in_browser):
+def test_direct_add_to_cart_from_datasheet(set_up_logged_in_browser):
     page = set_up_logged_in_browser
-    product = Product(page)
+    page.goto(URL)
+    prod = Product(page)
     cart = Cart(page)
-    page.goto(BASE_URL)
-    product.fill_search_bar("Lipstick")
-    product.press_enter_search()
-    product.click_add_to_cart_from_details()
-    assert cart.is_checkout_button_visible(), "Checkout button should be visible in cart"
+    prod.search("Lipstick")
+    prod.add_to_cart_from_datasheet()
+    assert cart.is_checkout_available()
 
-def test_search_lip_and_add_viva_glam_lipstick_to_cart(set_up_logged_in_browser):
+def test_add_to_cart_from_result_grid(set_up_logged_in_browser):
     page = set_up_logged_in_browser
-    product = Product(page)
+    page.goto(URL)
+    prod = Product(page)
     cart = Cart(page)
-    page.goto(BASE_URL)
-    product.fill_search_bar("Lip")
-    product.press_enter_search()
-    product.click_product_by_title("Viva Glam Lipstick")
-    product.click_add_to_cart_from_details()
-    assert cart.is_checkout_button_visible(), "Checkout button should be visible in cart"
+    prod.search("Lip")
+    prod.click_product_title("Viva Glam Lipstick")
+    prod.add_to_cart_from_datasheet()
+    assert cart.is_checkout_available()
 
-def test_search_nonsense_no_result(set_up_logged_in_browser):
+def test_no_product_found(set_up_logged_in_browser):
     page = set_up_logged_in_browser
-    product = Product(page)
-    page.goto(BASE_URL)
-    product.fill_search_bar("dsadfsadsa")
-    product.press_enter_search()
-    assert product.is_no_products_message_visible(), "No products matching text should appear"
+    page.goto(URL)
+    prod = Product(page)
+    prod.search("dsadfsadsa")
+    assert prod.is_no_product_found()
 
-def test_checkout_confirm_order_success(set_up_logged_in_browser):
+def test_checkout_and_order(set_up_logged_in_browser):
     page = set_up_logged_in_browser
+    page.goto(URL)
     cart = Cart(page)
-    page.goto(BASE_URL)
-    # Click Checkout from header (first a.menu_checkout)
-    page.wait_for_selector('a.menu_checkout', timeout=10000)
-    page.click('a.menu_checkout')
-    cart.is_confirm_order_button_visible()
-    cart.click_confirm_order_button()
-    # Wait for possible redirect and check url
+    cart.goto_checkout_header()
+    cart.page.wait_for_selector('button#checkout_btn', timeout=20000)
+    cart.click_confirm_order()
     page.wait_for_url("https://automationteststore.com/index.php?rt=checkout/success", timeout=20000)
     assert "checkout/success" in page.url
 
-def test_checkout_cart_empty(set_up_logged_in_browser):
+def test_empty_cart_checkout(set_up_logged_in_browser):
     page = set_up_logged_in_browser
+    page.goto(URL)
     cart = Cart(page)
-    page.goto(BASE_URL)
-    # Click Checkout from header (first a.menu_checkout)
-    page.wait_for_selector('a.menu_checkout', timeout=10000)
-    page.click('a.menu_checkout')
+    cart.goto_checkout_header()
     page.wait_for_url("https://automationteststore.com/index.php?rt=checkout/cart", timeout=20000)
-    assert cart.is_cart_empty_message_visible(), "Cart should display empty message"
+    assert cart.is_cart_empty()
