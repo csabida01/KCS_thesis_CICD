@@ -1,35 +1,37 @@
 class LoginPage:
     URL = "https://automationteststore.com/index.php?rt=account/login"
 
+    # CSS Selectors from the login page HTML snippet
+    LOGIN_LINK_HEADER = 'a[href="https://automationteststore.com/index.php?rt=account/login"]'
+    USERNAME_INPUT = '#loginFrm_loginname'
+    PASSWORD_INPUT = '#loginFrm_password'
+    LOGIN_BUTTON = 'button[title="Login"]'
+    ERROR_ALERT = 'div.alert.alert-error.alert-danger'
+
     def __init__(self, page):
         self.page = page
 
-    @property
-    def login_username_input(self):
-        return self.page.locator('input#loginFrm_loginname')
-
-    @property
-    def login_password_input(self):
-        return self.page.locator('input#loginFrm_password')
-
-    @property
-    def login_button(self):
-        return self.page.locator('button.btn.btn-orange[title="Login"]')
-
-    @property
-    def login_error_message(self):
-        return self.page.locator('div.alert.alert-error.alert-danger')
+    def goto_login(self):
+        self.page.wait_for_selector(self.LOGIN_LINK_HEADER, timeout=15000)
+        self.page.click(self.LOGIN_LINK_HEADER)
+        self.page.wait_for_selector(self.USERNAME_INPUT, timeout=15000)
 
     def login(self, username, password):
-        self.login_username_input.wait_for(state='visible')
-        self.login_username_input.fill(username)
-        self.login_password_input.fill(password)
-        self.login_button.wait_for(state='visible')
-        self.login_button.click()
+        self.page.wait_for_selector(self.USERNAME_INPUT, timeout=15000)
+        self.page.fill(self.USERNAME_INPUT, username)
+        self.page.fill(self.PASSWORD_INPUT, password)
+        self.page.wait_for_selector(self.LOGIN_BUTTON, timeout=15000)
+        self.page.click(self.LOGIN_BUTTON)
 
-    def get_login_error_message(self):
-        self.login_error_message.wait_for(state='visible')
-        return self.login_error_message.inner_text().strip()
+    def check_login_error(self):
+        self.page.wait_for_selector(self.ERROR_ALERT, timeout=15000)
+        return self.page.is_visible(self.ERROR_ALERT)
 
-    def on_page(self):
-        return self.page.url.startswith(self.URL)
+    def fill_search_and_submit(self, text):
+        self.page.wait_for_selector('input#filter_keyword', timeout=15000)
+        self.page.fill('input#filter_keyword', text)
+        self.page.press('input#filter_keyword', 'Enter')
+
+    def click_checkout_header(self):
+        self.page.wait_for_selector('a.menu_checkout', timeout=15000)
+        self.page.click('a.menu_checkout')
