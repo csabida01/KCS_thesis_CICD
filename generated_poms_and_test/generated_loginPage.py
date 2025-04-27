@@ -1,25 +1,35 @@
 class LoginPage:
+    URL = "https://automationteststore.com/index.php?rt=account/login"
+
     def __init__(self, page):
         self.page = page
 
-    # HEADER
-    def goto_login(self):
-        self.page.wait_for_selector('.navbar-right .block_2 #customernav #customer_menu_top > li > a')
-        self.page.click('.navbar-right .block_2 #customernav #customer_menu_top > li > a')
+    @property
+    def login_username_input(self):
+        return self.page.locator('input#loginFrm_loginname')
 
-    # LOGIN BOX
+    @property
+    def login_password_input(self):
+        return self.page.locator('input#loginFrm_password')
+
+    @property
+    def login_button(self):
+        return self.page.locator('button.btn.btn-orange[title="Login"]')
+
+    @property
+    def login_error_message(self):
+        return self.page.locator('div.alert.alert-error.alert-danger')
+
     def login(self, username, password):
-        self.page.wait_for_selector('#loginFrm_loginname')
-        self.page.fill('#loginFrm_loginname', username)
-        self.page.fill('#loginFrm_password', password)
-        self.page.wait_for_selector('button.btn-orange[title="Login"]')
-        self.page.click('button.btn-orange[title="Login"]')
+        self.login_username_input.wait_for(state='visible')
+        self.login_username_input.fill(username)
+        self.login_password_input.fill(password)
+        self.login_button.wait_for(state='visible')
+        self.login_button.click()
 
-    def get_login_error(self):
-        self.page.wait_for_selector('div.alert.alert-error.alert-danger')
-        return self.page.inner_text('div.alert.alert-error.alert-danger')
+    def get_login_error_message(self):
+        self.login_error_message.wait_for(state='visible')
+        return self.login_error_message.inner_text().strip()
 
-    # MY ACCOUNT PAGE
-    def is_on_my_account(self):
-        self.page.wait_for_selector('div.myaccountbox ul.side_account_list li.selected a')
-        return self.page.is_visible('div.myaccountbox ul.side_account_list li.selected a')
+    def on_page(self):
+        return self.page.url.startswith(self.URL)

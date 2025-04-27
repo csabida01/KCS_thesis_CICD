@@ -2,28 +2,38 @@ class Cart:
     def __init__(self, page):
         self.page = page
 
-    # FROM HEADER: click 'Checkout'
-    def goto_checkout_header(self):
-        self.page.wait_for_selector('a.menu_checkout')
-        self.page.click('a.menu_checkout')
+    @property
+    def checkout_button(self):
+        return self.page.locator('a#cart_checkout1')
 
-    # CHECKOUT PAGE
-    def is_checkout_available(self):
-        self.page.wait_for_selector('a#cart_checkout1')
-        return self.page.is_visible('a#cart_checkout1')
+    @property
+    def update_button(self):
+        return self.page.locator('button#cart_update')
 
-    # CHECKOUT PAGE: Confirm Order
-    def click_confirm_order(self):
-        self.page.wait_for_selector('button#checkout_btn')
-        self.page.click('button#checkout_btn')
+    @property
+    def empty_cart_div(self):
+        return self.page.locator('div.contentpanel:has-text("Your shopping cart is empty!")')
 
-    # CHECKOUT PAGE: Update cart
-    def click_update(self):
-        self.page.wait_for_selector('button#cart_update')
-        self.page.click('button#cart_update')
+    @property
+    def confirm_order_button(self):
+        return self.page.locator('button#checkout_btn')
 
-    # EMPTY CART
-    def is_cart_empty(self):
-        self.page.wait_for_selector('h1.heading1 span.maintext')
-        text = self.page.inner_text('h1.heading1 span.maintext')
-        return "Shopping Cart" in text and "empty" in self.page.inner_text('div.contentpanel').lower()
+    @property
+    def processed_order_heading(self):
+        return self.page.locator('h1.heading1 span.maintext:has-text("Your Order Has Been Processed!")')
+
+    def click_checkout(self):
+        self.checkout_button.wait_for(state='visible')
+        self.checkout_button.click()
+
+    def cart_is_empty(self):
+        self.empty_cart_div.wait_for(state='visible')
+        return self.empty_cart_div.is_visible()
+
+    def click_confirm_order_button(self):
+        self.confirm_order_button.wait_for(state='visible')
+        self.confirm_order_button.click()
+
+    def is_order_processed(self):
+        self.processed_order_heading.wait_for(state='visible')
+        return self.processed_order_heading.is_visible()

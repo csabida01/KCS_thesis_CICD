@@ -2,31 +2,53 @@ class Product:
     def __init__(self, page):
         self.page = page
 
-    # SEARCH
-    def search(self, keyword):
-        self.page.wait_for_selector('input#filter_keyword')
-        self.page.click('input#filter_keyword')
-        self.page.fill('input#filter_keyword', keyword)
-        self.page.keyboard.press('Enter')
+    @property
+    def search_bar_input(self):
+        return self.page.locator('input#filter_keyword')
 
-    # LIP SEARCH RESULTS
-    def click_product_title(self, title_text):
-        selector = f'a[title="{title_text}"]'
-        self.page.wait_for_selector(selector)
-        self.page.click(selector)
+    @property
+    def lipstick_color_select(self):
+        return self.page.locator('select#option305')
 
-    # LIPSTICK DATASHEET
-    def add_to_cart_from_datasheet(self):
-        self.page.wait_for_selector('ul.productpagecart a.cart')
-        self.page.click('ul.productpagecart a.cart')
+    @property
+    def lipstick_add_to_cart(self):
+        return self.page.locator('ul.productpagecart > li > a.cart')
 
-    # PRODUCT GRID: Add to Cart for Viva Glam Lipstick (id=59)
-    def add_to_cart_from_search_result(self, product_id):
-        add_cart_selector = f'a.productcart[data-id="{product_id}"]'
-        self.page.wait_for_selector(add_cart_selector)
-        self.page.click(add_cart_selector)
+    @property
+    def grid_viva_glam_lipstick(self):
+        return self.page.locator('a.prdocutname[title="Viva Glam Lipstick"]')
 
-    # LIPSTICK NO FINDINGS
-    def is_no_product_found(self):
-        self.page.wait_for_selector('div.contentpanel > div')
-        return self.page.inner_text('div.contentpanel > div').strip() == "There is no product that matches the search criteria."
+    @property
+    def search_button(self):
+        return self.page.locator('button#search_button')
+
+    @property
+    def no_product_found_text(self):
+        return self.page.locator('div:has-text("There is no product that matches the search criteria.")')
+
+    @property
+    def product_grid_add_to_cart(self):
+        # This grabs the "Add to Cart" for product_id=59 in grid search
+        return self.page.locator('a.productcart[data-id="59"]')
+
+    def search_for(self, query):
+        self.search_bar_input.wait_for(state='visible')
+        self.search_bar_input.click()
+        self.search_bar_input.fill(query)
+        self.search_bar_input.press('Enter')
+
+    def click_viva_glam_lipstick_from_grid(self):
+        self.grid_viva_glam_lipstick.wait_for(state='visible')
+        self.grid_viva_glam_lipstick.click()
+
+    def click_grid_add_to_cart(self):
+        self.product_grid_add_to_cart.wait_for(state='visible')
+        self.product_grid_add_to_cart.click()
+
+    def lipstick_datasheet_add_to_cart(self):
+        self.lipstick_add_to_cart.wait_for(state='visible')
+        self.lipstick_add_to_cart.click()
+
+    def no_results_text_present(self):
+        self.no_product_found_text.wait_for(state='visible')
+        return self.no_product_found_text.is_visible()
