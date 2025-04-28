@@ -1,38 +1,32 @@
+from playwright.sync_api import Page, expect
+
 class Product:
-    # Selectors for product searching and product page
-    # Use "a[title='Viva Glam Lipstick']" for searching by exact product in the grid
-    VIVA_GLAM_LIPSTICK_LINK = 'a[title="Viva Glam Lipstick"]'
-    ADD_TO_CART_ON_DATASHEET = 'ul.productpagecart a.cart'
-    # On search grid, buttons are like 'a.productcart[data-id="59"]' for Viva Glam Lipstick,
-    # but add to cart not on grid for "Lipstick" exact
+    def __init__(self, page: Page):
+        self.page = page
 
-    # Wishlist selectors
-    WISHLIST_ADD = 'a.wishlist_add.btn'
-    WISHLIST_REMOVE = 'a.wishlist_remove.btn'
+    def search_for_product(self, text):
+        self.page.wait_for_selector('#filter_keyword')
+        self.page.fill('#filter_keyword', text)
+        self.page.press('#filter_keyword', 'Enter')
 
-    @staticmethod
-    def click_viva_glam_lipstick_from_search(page):
-        page.wait_for_selector(Product.VIVA_GLAM_LIPSTICK_LINK, timeout=15000)
-        page.click(Product.VIVA_GLAM_LIPSTICK_LINK)
+    def click_result_by_title(self, title_text):
+        selector = f'a[title="{title_text}"]'
+        self.page.wait_for_selector(selector)
+        self.page.locator(selector).click()
 
-    @staticmethod
-    def add_to_cart_from_datasheet(page):
-        page.wait_for_selector(Product.ADD_TO_CART_ON_DATASHEET, timeout=15000)
-        page.click(Product.ADD_TO_CART_ON_DATASHEET)
+    def add_current_product_to_cart(self):
+        # lipstick datasheet "Add to cart" button is <a class="cart">
+        self.page.wait_for_selector('a.cart')
+        self.page.locator('a.cart').click()
 
-    @staticmethod
-    def add_first_product_to_cart_from_search(page):
-        # "Add to Cart" for Viva Glam Lipstick on search grid
-        add_to_cart_btn = 'a.productcart[data-id="59"]'
-        page.wait_for_selector(add_to_cart_btn, timeout=15000)
-        page.click(add_to_cart_btn)
+    def add_lip_search_grid_product_to_cart(self, data_id):
+        self.page.wait_for_selector(f'a.productcart[data-id="{data_id}"]')
+        self.page.locator(f'a.productcart[data-id="{data_id}"]').click()
 
-    @staticmethod
-    def is_no_results_message(page):
-        # "There is no product that matches the search criteria."
-        selector = "div.contentpanel > div:has-text('There is no product that matches the search criteria.')"
-        try:
-            page.wait_for_selector(selector, timeout=15000)
-            return page.is_visible(selector)
-        except:
-            return False
+    def is_no_search_results_message_visible(self):
+        self.page.wait_for_selector('div.contentpanel > div', timeout=8000)
+        return self.page.inner_text('div.contentpanel > div').strip() == "There is no product that matches the search criteria."
+
+    def get_no_search_results_text(self):
+        self.page.wait_for_selector('div.contentpanel > div', timeout=8000)
+        return self.page.inner_text('div.contentpanel > div').strip()

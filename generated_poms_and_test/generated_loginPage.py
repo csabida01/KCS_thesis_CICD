@@ -1,37 +1,40 @@
+from playwright.sync_api import Page, expect
+
 class LoginPage:
-    URL = "https://automationteststore.com/index.php?rt=account/login"
-
-    # CSS Selectors from the login page HTML snippet
-    LOGIN_LINK_HEADER = 'a[href="https://automationteststore.com/index.php?rt=account/login"]'
-    USERNAME_INPUT = '#loginFrm_loginname'
-    PASSWORD_INPUT = '#loginFrm_password'
-    LOGIN_BUTTON = 'button[title="Login"]'
-    ERROR_ALERT = 'div.alert.alert-error.alert-danger'
-
-    def __init__(self, page):
+    def __init__(self, page: Page):
         self.page = page
 
-    def goto_login(self):
-        self.page.wait_for_selector(self.LOGIN_LINK_HEADER, timeout=15000)
-        self.page.click(self.LOGIN_LINK_HEADER)
-        self.page.wait_for_selector(self.USERNAME_INPUT, timeout=15000)
+    def goto_homepage(self):
+        self.page.goto("https://automationteststore.com/")
+    
+    def click_login_or_register(self):
+        self.page.wait_for_selector('a[href="https://automationteststore.com/index.php?rt=account/login"]')
+        self.page.locator('a[href="https://automationteststore.com/index.php?rt=account/login"]').first.click()
 
-    def login(self, username, password):
-        self.page.wait_for_selector(self.USERNAME_INPUT, timeout=15000)
-        self.page.fill(self.USERNAME_INPUT, username)
-        self.page.fill(self.PASSWORD_INPUT, password)
-        self.page.wait_for_selector(self.LOGIN_BUTTON, timeout=15000)
-        self.page.click(self.LOGIN_BUTTON)
+    def fill_username(self, username):
+        self.page.wait_for_selector("#loginFrm_loginname")
+        self.page.fill("#loginFrm_loginname", username)
 
-    def check_login_error(self):
-        self.page.wait_for_selector(self.ERROR_ALERT, timeout=15000)
-        return self.page.is_visible(self.ERROR_ALERT)
+    def fill_password(self, password):
+        self.page.wait_for_selector("#loginFrm_password")
+        self.page.fill("#loginFrm_password", password)
 
-    def fill_search_and_submit(self, text):
-        self.page.wait_for_selector('input#filter_keyword', timeout=15000)
-        self.page.fill('input#filter_keyword', text)
-        self.page.press('input#filter_keyword', 'Enter')
+    def click_login_button(self):
+        self.page.wait_for_selector('button[title="Login"]')
+        self.page.locator('button[title="Login"]').click()
 
-    def click_checkout_header(self):
-        self.page.wait_for_selector('a.menu_checkout', timeout=15000)
-        self.page.click('a.menu_checkout')
+    def is_login_error(self):
+        self.page.wait_for_selector('div.alert.alert-error.alert-danger', timeout=6000)
+        return self.page.is_visible('div.alert.alert-error.alert-danger')
+
+    def get_login_error_text(self):
+        self.page.wait_for_selector('div.alert.alert-error.alert-danger')
+        return self.page.locator('div.alert.alert-error.alert-danger').text_content()
+
+    def is_logged_in(self):
+        self.page.wait_for_selector('div.myaccountbox', timeout=10000)
+        return self.page.is_visible('div.myaccountbox')
+
+    def go_to_checkout_from_top_header(self):
+        self.page.wait_for_selector('a.menu_checkout')
+        self.page.locator('a.menu_checkout').first.click()
