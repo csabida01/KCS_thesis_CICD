@@ -1,28 +1,35 @@
+# generated_cart.py
 from playwright.sync_api import Page, expect
 
 class Cart:
+    MY_ACCOUNT_HEADING = ".sidewidt .heading2"
+    CHECKOUT_BUTTON_IN_CART = "#cart_checkout1"
+    CONFIRM_ORDER_BUTTON = "#checkout_btn"
+    EMPTY_CART_HEADER = 'span.maintext' # contains "Shopping Cart"
+
     def __init__(self, page: Page):
         self.page = page
 
-    def is_checkout_visible(self):
-        self.page.wait_for_selector('#cart_checkout1', timeout=10000)
-        return self.page.is_visible('#cart_checkout1')
+    def my_account_heading_is_visible(self):
+        self.page.wait_for_selector(self.MY_ACCOUNT_HEADING, timeout=10000)
+        return self.page.is_visible(self.MY_ACCOUNT_HEADING)
 
-    def click_checkout(self):
-        self.page.wait_for_selector('#cart_checkout1', timeout=10000)
-        self.page.locator('#cart_checkout1').click()
+    def checkout_button_visible(self):
+        self.page.wait_for_selector(self.CHECKOUT_BUTTON_IN_CART, timeout=10000)
+        return self.page.is_visible(self.CHECKOUT_BUTTON_IN_CART)
 
-    def click_confirm_order(self):
-        # on confirm order page
-        self.page.wait_for_selector('button#checkout_btn', timeout=12000)
-        self.page.locator('button#checkout_btn').click()
+    def click_checkout_button(self):
+        self.page.wait_for_selector(self.CHECKOUT_BUTTON_IN_CART, timeout=10000)
+        self.page.locator(self.CHECKOUT_BUTTON_IN_CART).click()
 
-    def order_success_message_visible(self):
-        self.page.wait_for_selector('span.maintext', timeout=8000)
-        maintext = self.page.inner_text('span.maintext')
-        return "Your Order Has Been Processed" in maintext
+    def confirm_order_button_visible(self):
+        self.page.wait_for_selector(self.CONFIRM_ORDER_BUTTON, timeout=20000)
+        return self.page.is_visible(self.CONFIRM_ORDER_BUTTON)
+    
+    def click_confirm_order_button(self):
+        self.page.wait_for_selector(self.CONFIRM_ORDER_BUTTON, timeout=20000)
+        self.page.locator(self.CONFIRM_ORDER_BUTTON).click()
 
-    def is_cart_empty(self):
-        # After pressing checkout, if cart is empty, this appears:
-        self.page.wait_for_selector('span.maintext', timeout=10000)
-        return self.page.inner_text('span.maintext').strip() == "Shopping Cart"
+    def empty_cart_visible(self):
+        self.page.wait_for_selector(self.EMPTY_CART_HEADER, timeout=10000)
+        return self.page.inner_text(self.EMPTY_CART_HEADER).strip() == "Shopping Cart"

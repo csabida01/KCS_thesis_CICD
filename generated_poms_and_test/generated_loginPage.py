@@ -1,40 +1,46 @@
+# generated_loginPage.py
 from playwright.sync_api import Page, expect
 
 class LoginPage:
+    LOGIN_HEADER_LOGIN_OR_REGISTER = 'a[href="https://automationteststore.com/index.php?rt=account/login"]'
+    USERNAME_INPUT = "#loginFrm_loginname"
+    PASSWORD_INPUT = "#loginFrm_password"
+    LOGIN_BUTTON = 'button.btn.btn-orange[title="Login"]'
+    ERROR_MESSAGE = "div.alert.alert-error.alert-danger"
+    SEARCH_BAR_INPUT = "#filter_keyword"
+    TOP_MENU_CHECKOUT = "a.menu_checkout"
+
     def __init__(self, page: Page):
         self.page = page
 
-    def goto_homepage(self):
-        self.page.goto("https://automationteststore.com/")
-    
-    def click_login_or_register(self):
-        self.page.wait_for_selector('a[href="https://automationteststore.com/index.php?rt=account/login"]')
-        self.page.locator('a[href="https://automationteststore.com/index.php?rt=account/login"]').first.click()
+    def click_login_header(self):
+        self.page.wait_for_selector(self.LOGIN_HEADER_LOGIN_OR_REGISTER, timeout=10000)
+        self.page.locator(self.LOGIN_HEADER_LOGIN_OR_REGISTER).click()
 
     def fill_username(self, username):
-        self.page.wait_for_selector("#loginFrm_loginname")
-        self.page.fill("#loginFrm_loginname", username)
+        self.page.wait_for_selector(self.USERNAME_INPUT, timeout=10000)
+        self.page.fill(self.USERNAME_INPUT, username)
 
     def fill_password(self, password):
-        self.page.wait_for_selector("#loginFrm_password")
-        self.page.fill("#loginFrm_password", password)
+        self.page.wait_for_selector(self.PASSWORD_INPUT, timeout=10000)
+        self.page.fill(self.PASSWORD_INPUT, password)
 
     def click_login_button(self):
-        self.page.wait_for_selector('button[title="Login"]')
-        self.page.locator('button[title="Login"]').click()
+        self.page.wait_for_selector(self.LOGIN_BUTTON, timeout=10000)
+        self.page.locator(self.LOGIN_BUTTON).click()
 
-    def is_login_error(self):
-        self.page.wait_for_selector('div.alert.alert-error.alert-danger', timeout=6000)
-        return self.page.is_visible('div.alert.alert-error.alert-danger')
+    def error_message_is_visible(self):
+        return self.page.is_visible(self.ERROR_MESSAGE)
 
-    def get_login_error_text(self):
-        self.page.wait_for_selector('div.alert.alert-error.alert-danger')
-        return self.page.locator('div.alert.alert-error.alert-danger').text_content()
+    def click_search_bar(self):
+        self.page.wait_for_selector(self.SEARCH_BAR_INPUT, timeout=10000)
+        self.page.locator(self.SEARCH_BAR_INPUT).click()
 
-    def is_logged_in(self):
-        self.page.wait_for_selector('div.myaccountbox', timeout=10000)
-        return self.page.is_visible('div.myaccountbox')
+    def enter_keyword_and_press_enter(self, keyword):
+        self.page.wait_for_selector(self.SEARCH_BAR_INPUT, timeout=10000)
+        self.page.fill(self.SEARCH_BAR_INPUT, keyword)
+        self.page.keyboard.press("Enter")
 
-    def go_to_checkout_from_top_header(self):
-        self.page.wait_for_selector('a.menu_checkout')
-        self.page.locator('a.menu_checkout').first.click()
+    def click_top_menu_checkout(self):
+        self.page.wait_for_selector(self.TOP_MENU_CHECKOUT, timeout=10000)
+        self.page.locator(self.TOP_MENU_CHECKOUT).click()
