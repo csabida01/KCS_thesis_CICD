@@ -464,7 +464,7 @@ while True:
         raise Exception("Assistant run failed.")
     time.sleep(1)
 
-time.sleep(18)
+time.sleep(25)
 messages = list(client.beta.threads.messages.list(thread_id=thread.id, run_id=run.id))
 
 message_content = messages[0].content[0].text.value
